@@ -14,17 +14,11 @@ const getLatestQuestion = async () => {
 };
 
 const getQuestionNumber = async () => {
-  return new Promise(resolve => {
-    rl.question(
-      'What question should be run? Leave blank for the most recent\n',
-      async answer => {
-        if (!answer) {
-          resolve(await getLatestQuestion());
-        }
-        resolve(answer.length === 1 ? `0${answer}` : answer);
-      },
-    );
-  });
+  const questionNumber = process.argv[2];
+  if (!questionNumber) {
+    return await getLatestQuestion();
+  }
+  return questionNumber.length === 1 ? `0${questionNumber}` : questionNumber;
 };
 
 const main = async () => {
