@@ -29,7 +29,7 @@ export enum Angle {
 
 export class Direction extends Coordinate {
   static RIGHT = new Direction(1, 0);
-  static UP_RIGHT = new Direction(1, 1);
+  static UP_RIGHT = new Direction(1, -1);
   static UP = new Direction(0, -1);
   static UP_LEFT = new Direction(-1, -1);
   static LEFT = new Direction(-1, 0);
@@ -62,5 +62,9 @@ export class Direction extends Coordinate {
     const angleOffset: number = Angle[angle] as unknown as number;
     const newIndex = (Direction.ORDER.indexOf(this) + angleOffset) % 8;
     return Direction.ORDER[newIndex];
+  }
+
+  toString() {
+    return `[${this.constructor.name}(${this.x},${this.y})]`;
   }
 }

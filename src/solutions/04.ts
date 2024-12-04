@@ -41,6 +41,32 @@ const getTotalXMASStartingAtCoordinate = (
   }, 0);
 };
 
+const isCenterOfMASCross = (input: string[], coordinate: Coordinate) => {
+  if (getLetterAtCoordinate(input, coordinate) !== 'A') {
+    return false;
+  }
+
+  const diagonal1 = [
+    getLetterAtCoordinate(input, coordinate.add(Direction.UP_RIGHT)),
+    getLetterAtCoordinate(input, coordinate.add(Direction.DOWN_LEFT)),
+  ];
+
+  if (!diagonal1.includes('M') || !diagonal1.includes('S')) {
+    return false;
+  }
+
+  const diagonal2 = [
+    getLetterAtCoordinate(input, coordinate.add(Direction.UP_LEFT)),
+    getLetterAtCoordinate(input, coordinate.add(Direction.DOWN_RIGHT)),
+  ];
+
+  if (!diagonal2.includes('M') || !diagonal2.includes('S')) {
+    return false;
+  }
+
+  return true;
+};
+
 export default async function solution() {
   const input = await readLines('/data/04.txt');
 
@@ -52,6 +78,19 @@ export default async function solution() {
     }
   }
 
-  //2597 too low
-  console.log(totalXMASFound);
+  // 2644
+  console.log('total XMAS found is ' + totalXMASFound);
+
+  let totalMASCrossFound = 0;
+  for (let y = 0; y < input.length; y++) {
+    for (let x = 0; x < input[0].length; x++) {
+      const coordinate = new Coordinate(x, y);
+      if (isCenterOfMASCross(input, coordinate)) {
+        totalMASCrossFound++;
+      }
+    }
+  }
+
+  // 1952
+  console.log('total X-MAS found is ' + totalMASCrossFound);
 }
