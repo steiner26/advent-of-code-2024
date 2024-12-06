@@ -14,6 +14,10 @@ export class Coordinate {
   equals(other: Coordinate) {
     return this.x === other.x && this.y === other.y;
   }
+
+  toString() {
+    return `[${this.constructor.name}(${this.x},${this.y})]`;
+  }
 }
 
 export enum Angle {
@@ -59,12 +63,8 @@ export class Direction extends Coordinate {
   }
 
   rotate(angle: Angle) {
-    const angleOffset: number = Angle[angle] as unknown as number;
+    const angleOffset = angle.valueOf()
     const newIndex = (Direction.ORDER.indexOf(this) + angleOffset) % 8;
     return Direction.ORDER[newIndex];
-  }
-
-  toString() {
-    return `[${this.constructor.name}(${this.x},${this.y})]`;
   }
 }
