@@ -1,48 +1,87 @@
+import {
+  createCopyWithValue,
+  getCharacterAtCoordinate,
+  getFirstCoordinateOfCharacter,
+} from '../utils/arrayUtils';
 import { Angle, Coordinate, Direction } from '../utils/coordinate';
 import { readLines } from '../utils/io';
 
-const getCoordinateOfCharacter = (input: string[], character: string) => {
-  const y = input.findIndex((row) => row.includes(character))
-  const x = input[y].indexOf(character)
+const getNumberOfPositionsVisited = (input: string[]) => {
+  let direction = Direction.UP;
+  let coordinate = getFirstCoordinateOfCharacter(input, '^');
+  let nextCoordinate = coordinate.add(direction);
+  let nextCharacter = getCharacterAtCoordinate(input, nextCoordinate);
+  const visited = new Set([coordinate.toString()]);
 
-  return new Coordinate(x, y)
-}
-
-const getCharacterAtCoordinate = (input: string[], coordinate: Coordinate) => {
-  if (coordinate.x < 0 || coordinate.x >= input[0].length) {
-    return null;
+  while (nextCharacter) {
+    if (nextCharacter === '#') {
+      direction = direction.rotate(Angle.DEGREES_270);
+    } else {
+      coordinate = coordinate.add(direction);
+      visited.add(coordinate.toString());
+    }
+    nextCoordinate = coordinate.add(direction);
+    nextCharacter = getCharacterAtCoordinate(input, nextCoordinate);
   }
 
-  if (coordinate.y < 0 || coordinate.y >= input.length) {
-    return null;
-  }
+  return visited.size;
+};
 
-  return input[coordinate.y].charAt(coordinate.x);
+const checkIfCreatesLoop = (
+  input: string[],
+  extraObstacleCoordinate: Coordinate,
+) => {
+  let direction = Direction.UP;
+  let coordinate = getFirstCoordinateOfCharacter(input, '^');
+  let nextCoordinate = coordinate.add(direction);
+  let nextCharacter = getCharacterAtCoordinate(input, nextCoordinate);
+  const tracker = createCopyWithValue(input, () => [] as Direction[]);
+  while (nextCharacter) {
+    if (
+      nextCharacter === '#' ||
+      nextCoordinate.equals(extraObstacleCoordinate)
+    ) {
+      direction = direction.rotate(Angle.DEGREES_270);
+    } else {
+      coordinate = coordinate.add(direction);
+      if (tracker[coordinate.y][coordinate.x].includes(direction)) {
+        return true;
+      }
+      tracker[coordinate.y][coordinate.x].push(direction);
+    }
+    nextCoordinate = coordinate.add(direction);
+    nextCharacter = getCharacterAtCoordinate(input, nextCoordinate);
+  }
+  return false;
+};
+
+const getNumberOfPotentialLoops = (input: string[]) => {
+  let numPotentialLoops = 0;
+  for (let y = 0; y < input.length; y++) {
+    for (let x = 0; x < input.length; x++) {
+      const potentialObstuctionCoordinate = new Coordinate(x, y);
+      if (
+        getCharacterAtCoordinate(input, potentialObstuctionCoordinate) ===
+          '.' &&
+        checkIfCreatesLoop(input, potentialObstuctionCoordinate)
+      ) {
+        numPotentialLoops++;
+      }
+    }
+  }
+  return numPotentialLoops;
 };
 
 export default async function solution() {
   const input = await readLines('/data/06.txt');
 
-  let direction = Direction.UP
-  let coordinate = getCoordinateOfCharacter(input, "^")
-  let nextCoordinate = coordinate.add(direction)
-  let nextCharacter = getCharacterAtCoordinate(input, nextCoordinate)
-  const visited = new Set([coordinate.toString()]);
-
-  while (nextCharacter) {
-    if (nextCharacter === "#") {
-      direction = direction.rotate(Angle.DEGREES_270)
-    } else {
-      coordinate = coordinate.add(direction);
-      visited.add(coordinate.toString())
-    }
-    nextCoordinate = coordinate.add(direction)
-    nextCharacter = getCharacterAtCoordinate(input, nextCoordinate)
-  }
-
+  const numPositionsVisited = getNumberOfPositionsVisited(input);
   // 5312
-  console.log('guard will visit ' + visited.size + ' total positions')
+  console.log('guard will visit ' + numPositionsVisited + ' total positions');
 
-  // keep track of the full path, including which direction you were going at each coordinate
-  // while going through, if forcing the guard to turn right would put it somewhere it already was, that creates a loop
+  const numPotentialLoops = getNumberOfPotentialLoops(input);
+  // 1748
+  console.log(
+    'there are ' + numPotentialLoops + ' locations that would cause a loop',
+  );
 }
