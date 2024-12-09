@@ -1,10 +1,4 @@
-import * as readline from 'readline';
 import { readDirectory } from './utils/io';
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
 
 const getLatestQuestion = async () => {
   const directoryContents = await readDirectory('/src/solutions');
@@ -27,9 +21,6 @@ const main = async () => {
   const questionSolution = await import(`./solutions/${questionNumber}`);
   console.log(`running question ${questionNumber}`);
   questionSolution.default();
-
-  // Close the readline interface
-  rl.close();
 };
 
 main();
