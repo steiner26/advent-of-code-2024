@@ -10,15 +10,20 @@ export const getFirstCoordinateOfCharacter = (
   return new Coordinate(x, y);
 };
 
+export const isInBounds = (input: string[], coordinate: Coordinate) => {
+  return (
+    coordinate.x >= 0 &&
+    coordinate.x < input[0].length &&
+    coordinate.y >= 0 &&
+    coordinate.y < input.length
+  );
+};
+
 export const getCharacterAtCoordinate = (
   input: string[],
   coordinate: Coordinate,
 ) => {
-  if (coordinate.x < 0 || coordinate.x >= input[0].length) {
-    return null;
-  }
-
-  if (coordinate.y < 0 || coordinate.y >= input.length) {
+  if (!isInBounds(input, coordinate)) {
     return null;
   }
 

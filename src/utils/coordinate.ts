@@ -11,8 +11,20 @@ export class Coordinate {
     return new Coordinate(this.x + other.x, this.y + other.y);
   }
 
+  subtract(other: Coordinate) {
+    return new Coordinate(this.x - other.x, this.y - other.y);
+  }
+
   equals(other: Coordinate) {
     return this.x === other.x && this.y === other.y;
+  }
+
+  reduce() {
+    const gcd = (a: number, b: number): number => {
+      return b ? gcd(b, a % b) : a;
+    };
+    const dedonimator = gcd(this.x, this.y);
+    return new Coordinate(this.x / dedonimator, this.y / dedonimator);
   }
 
   toString() {
@@ -63,7 +75,7 @@ export class Direction extends Coordinate {
   }
 
   rotate(angle: Angle) {
-    const angleOffset = angle.valueOf()
+    const angleOffset = angle.valueOf();
     const newIndex = (Direction.ORDER.indexOf(this) + angleOffset) % 8;
     return Direction.ORDER[newIndex];
   }

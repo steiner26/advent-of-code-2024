@@ -58,7 +58,7 @@ const checkIfCreatesLoop = (
 const getNumberOfPotentialLoops = (input: string[]) => {
   let numPotentialLoops = 0;
   for (let y = 0; y < input.length; y++) {
-    for (let x = 0; x < input.length; x++) {
+    for (let x = 0; x < input[0].length; x++) {
       const potentialObstuctionCoordinate = new Coordinate(x, y);
       if (
         getCharacterAtCoordinate(input, potentialObstuctionCoordinate) ===
