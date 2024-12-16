@@ -30,11 +30,19 @@ export const getCharacterAtCoordinate = (
   return input[coordinate.y].charAt(coordinate.x);
 };
 
+export const createArrayWithValue = <T>(
+  width: number,
+  height: number,
+  valueFactory: () => T,
+) => {
+  return new Array(height)
+    .fill(null)
+    .map(_ => new Array(width).fill(null).map(valueFactory));
+};
+
 export const createCopyWithValue = <T>(
   input: string[],
   valueFactory: () => T,
 ) => {
-  return new Array(input.length)
-    .fill(null)
-    .map(_ => new Array(input[0].length).fill(null).map(valueFactory));
+  return createArrayWithValue(input[0].length, input.length, valueFactory);
 };

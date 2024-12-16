@@ -1,3 +1,4 @@
+import { createArrayWithValue } from '../utils/arrayUtils';
 import { Coordinate } from '../utils/coordinate';
 import { readLines } from '../utils/io';
 
@@ -85,6 +86,42 @@ const calculateSafetyFactor = (robots: Robot[], maxX: number, maxY: number) => {
   return topLeftCount * topRightCount * bottomLeftCount * bottomRightCount;
 };
 
+const putRobotsOnMap = (robots: Robot[], maxX: number, maxY: number) => {
+  const result = createArrayWithValue(maxX + 1, maxY + 1, () => '.');
+  for (const robot of robots) {
+    result[robot.position.y][robot.position.x] = 'X';
+  }
+  return result;
+};
+
+const findChristmasTree = (robots: Robot[], maxX: number, maxY: number) => {
+  let newRobots = robots.map(robot => ({ ...robot }));
+  let proceed = true;
+  let i = 0;
+  let allTimeMaxLength = 0;
+  while (proceed) {
+    i++;
+    newRobots = newRobots.map(robot => {
+      const nextPosition = robot.position.add(robot.velocity);
+      return {
+        position: handleTeleport(nextPosition, maxX, maxY),
+        velocity: robot.velocity,
+      };
+    });
+    const map = putRobotsOnMap(newRobots, maxX, maxY);
+    const outputString = map.map(row => row.join('')).join('\n');
+    const matches = outputString.matchAll(/X+/g);
+    const maxLength = Math.max(...[...matches].map(match => match[0].length));
+    if (maxLength >= allTimeMaxLength) {
+      allTimeMaxLength = maxLength;
+    }
+    if (maxLength > 20) {
+      console.log(outputString);
+      return i;
+    }
+  }
+};
+
 export default async function solution() {
   const input = await readLines('/data/14.txt');
   const robots = input.map(line => parseRobot(line));
@@ -94,5 +131,11 @@ export default async function solution() {
   const finalRobots = stepRobots(robots, 100, maxX, maxY);
   const safetyFactor = calculateSafetyFactor(finalRobots, maxX, maxY);
   // 225810288
-  console.log(safetyFactor);
+  console.log('the safety factor after 100 seconds is ' + safetyFactor);
+
+  const christmasTreeSeconds = findChristmasTree(robots, maxX, maxY);
+  // 6752
+  console.log(
+    'The easter egg occurs after ' + christmasTreeSeconds + ' seconds',
+  );
 }
