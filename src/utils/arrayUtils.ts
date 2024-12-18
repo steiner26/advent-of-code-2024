@@ -46,3 +46,7 @@ export const createCopyWithValue = <T>(
 ) => {
   return createArrayWithValue(input[0].length, input.length, valueFactory);
 };
+
+export const createCopyOfTable = <T>(input: T[][]) => {
+  return input.map(row => [...row]);
+};
